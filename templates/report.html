@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}Report · {{ data.business_idea }}{% endblock %}
+{% block content %}
+<p class="crumb"><a href="{{ url_for('index') }}">Home</a> · Assessment #{{ data.id }} · {{ data.created_at }}</p>
+<header class="report-head">
+    <div>
+        <h1>Business Assessment</h1>
+        <p class="subtitle">{{ data.name }} · {{ data.location }}</p>
+        <p class="muted">Explainable AI-assisted rule-based advisory prototype. Not a trained LLM.</p>
+        <button type="button" class="btn secondary" id="open-chat-heading">Ask about this report 🤖</button>
+    </div>
+    <div class="score-chip {{ data.feasibility.feasibility_band|lower }}">
+        <span>Feasibility</span>
+        <strong>{{ data.feasibility.feasibility_score }}</strong>
+        <em>{{ data.feasibility.status }}</em>
+    </div>
+</header>
+
+<section class="card">
+    <h2>Business Overview</h2>
+    <table class="kv">
+        <tr><th>Name</th><td>{{ data.name }}</td></tr>
+        <tr><th>Location</th><td>{{ data.location }}</td></tr>
+        <tr><th>Business Idea</th><td>{{ data.business_idea }}</td></tr>
+        <tr><th>Initial Investment</th><td>₹{{ "{:,.0f}".format(data.financials.investment) }}</td></tr>
+    </table>
+</section>
+
+<section class="card">
+    <h2>Business Category</h2>
+    <p><strong>{{ data.classification.category }}</strong>
+        · confidence {{ "%.0f"|format(data.classification.confidence * 100) }}%
+        (keyword match, not a neural model)
+    </p>
+    {% if data.classification.matched_keywords %}
+        <p class="muted">Matched keywords: {{ data.classification.matched_keywords|join(", ") }}</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Locality Snapshot</h2>
+    <p class="badge">{{ data.locality.label }}</p>
+    <table class="kv">
+        <tr><th>Place</th><td>{{ data.locality.name }}{% if not data.locality.matched %} (unmatched — generic demo profile){% endif %}</td></tr>
+        <tr><th>Market demand</th><td>{{ data.locality.market_demand }}</td></tr>
+        <tr><th>Transport / access</th><td>{{ data.locality.transport_access }}</td></tr>
+        <tr><th>Competition</th><td>{{ data.locality.competition }}</td></tr>
+    </table>
+    <div class="split">
+        <div>
+            <h3>Common businesses</h3>
+            <ul>{% for item in data.locality.common_businesses %}<li>{{ item }}</li>{% endfor %}</ul>
+        </div>
+        <div>
+            <h3>Opportunities</h3>
+            <ul>{% for item in data.locality.opportunities %}<li>{{ item }}</li>{% endfor %}</ul>
+        </div>
+        <div>
+            <h3>Risks</h3>
+            <ul>{% for item in data.locality.risks %}<li>{{ item }}</li>{% endfor %}</ul>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Financial Summary</h2>
+    <div class="metrics">
+        <div class="metric"><span>Monthly Revenue</span><strong>₹{{ "{:,.0f}".format(data.financials.revenue) }}</strong></div>
+        <div class="metric"><span>Monthly Expenses</span><strong>₹{{ "{:,.0f}".format(data.financials.monthly_expenses) }}</strong></div>
+        <div class="metric"><span>Monthly Operating Profit</span><strong>₹{{ "{:,.0f}".format(data.financials.profit) }}</strong></div>
+        <div class="metric"><span>Annual Profit</span><strong>₹{{ "{:,.0f}".format(data.financials.annual_profit) }}</strong></div>
+        <div class="metric"><span>Profit Margin</span><strong>{{ data.financials.profit_margin }}%</strong></div>
+        <div class="metric"><span>ROI</span><strong>{{ data.financials.roi }}%</strong></div>
+        <div class="metric"><span>Break-even</span><strong>
+            {% if data.financials.break_even %}{{ data.financials.break_even }} months
+            {% else %}Not reachable with current profit{% endif %}
+        </strong></div>
+        <div class="metric"><span>Cash after EMI</span><strong>₹{{ "{:,.0f}".format(data.financials.monthly_cash_surplus) }}</strong></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Loan</h2>
+    <div class="metrics">
+        <div class="metric"><span>Loan Amount</span><strong>₹{{ "{:,.0f}".format(data.financials.loan_amount) }}</strong></div>
+        <div class="metric"><span>Interest</span><strong>{{ data.financials.interest_rate }}%</strong></div>
+        <div class="metric"><span>Tenure</span><strong>{{ data.financials.loan_tenure }} months</strong></div>
+        <div class="metric"><span>EMI</span><strong>₹{{ "{:,.2f}".format(data.financials.emi) }}</strong></div>
+        <div class="metric"><span>Annual Payment</span><strong>₹{{ "{:,.0f}".format(data.financials.annual_loan_payment) }}</strong></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Feasibility</h2>
+    <div class="progress"><div class="bar band-{{ data.feasibility.feasibility_band|lower }}" style="width: {{ data.feasibility.feasibility_score }}%"></div></div>
+    <p><strong>{{ data.feasibility.feasibility_score }} / 100</strong> — {{ data.feasibility.status }}</p>
+    <h3>Reasons</h3>
+    <ul>
+        {% for reason in data.feasibility.display_reasons %}
+            <li>{{ reason }}</li>
+        {% endfor %}
+    </ul>
+    <details>
+        <summary>Detailed scoring notes</summary>
+        <ul>
+            {% for reason in data.feasibility.reasons %}
+                <li>{{ reason }}</li>
+            {% endfor %}
+        </ul>
+    </details>
+    <p class="disclaimer">{{ data.feasibility.disclaimer }}</p>
+</section>
+
+<section class="card">
+    <h2>SWOT</h2>
+    <div class="swot">
+        <div><h3>Strengths</h3><ul>{% for item in data.swot.strengths %}<li>{{ item }}</li>{% endfor %}</ul></div>
+        <div><h3>Weaknesses</h3><ul>{% for item in data.swot.weaknesses %}<li>{{ item }}</li>{% endfor %}</ul></div>
+        <div><h3>Opportunities</h3><ul>{% for item in data.swot.opportunities %}<li>{{ item }}</li>{% endfor %}</ul></div>
+        <div><h3>Threats</h3><ul>{% for item in data.swot.threats %}<li>{{ item }}</li>{% endfor %}</ul></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Government Scheme Pointers</h2>
+    <p class="disclaimer">{{ data.scheme_disclaimer }} Do not treat these as an eligibility guarantee.</p>
+    <div class="scheme-list">
+        {% for s in data.schemes %}
+            <article class="scheme">
+                <h3>{{ s.scheme }} <span class="muted">{{ s.full_name }}</span></h3>
+                <p><strong>Purpose:</strong> {{ s.purpose }}</p>
+                <p><strong>Why it may be relevant:</strong> {{ s.why_relevant }}</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="card">
+    <h2>Recommendations</h2>
+    <ol class="recs">
+        {% for item in data.recommendations %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ol>
+</section>
+
+<section class="card" id="whatif">
+    <h2>What-If Simulation</h2>
+    <p class="muted">Recalculate using the same engine. Does not overwrite the saved report.</p>
+    <div class="actions wrap">
+        <button type="button" class="btn secondary whatif-btn" data-scenario="sales_10">Sales +10%</button>
+        <button type="button" class="btn secondary whatif-btn" data-scenario="sales_20">Sales +20%</button>
+        <button type="button" class="btn secondary whatif-btn" data-scenario="expenses_10">Expenses +10%</button>
+        <button type="button" class="btn secondary whatif-btn" data-scenario="loan_20">Loan -20%</button>
+    </div>
+    <div id="whatif-result" class="whatif-result" hidden>
+        <h3 id="whatif-label"></h3>
+        <table class="compare">
+            <thead>
+                <tr><th>Metric</th><th>Current</th><th>Scenario</th><th>Difference</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Revenue</td><td id="old-revenue"></td><td id="new-revenue"></td><td id="diff-revenue"></td></tr>
+                <tr><td>Expenses</td><td id="old-expenses"></td><td id="new-expenses"></td><td id="diff-expenses"></td></tr>
+                <tr><td>Profit</td><td id="old-profit"></td><td id="new-profit"></td><td id="diff-profit"></td></tr>
+                <tr><td>EMI</td><td id="old-emi"></td><td id="new-emi"></td><td id="diff-emi"></td></tr>
+                <tr><td>Feasibility</td><td id="old-feas"></td><td id="new-feas"></td><td id="diff-feas"></td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <h2>AI Business Assistant</h2>
+    <p class="muted">Local contextual assistant using rule-based intent detection and this assessment’s numbers. Use the floating button: <strong>Ask GramIntel</strong>.</p>
+</section>
+
+<button type="button" class="chat-fab" id="chat-fab" aria-label="Ask GramIntel">🤖 Ask GramIntel</button>
+
+<div class="chat-panel" id="chat-panel" hidden>
+    <div class="chat-head">
+        <div>
+            <strong>GramIntel Assistant 🤖</strong>
+            <p>Rule-based answers from this report only</p>
+        </div>
+        <button type="button" class="chat-close" id="chat-close" aria-label="Close chat">×</button>
+    </div>
+    <div class="chat-quick" id="chat-quick">
+        <button type="button" data-q="What is my profit?">What is my profit?</button>
+        <button type="button" data-q="How much is my EMI?">How much is my EMI?</button>
+        <button type="button" data-q="Why is my feasibility score like this?">Why is my feasibility score like this?</button>
+        <button type="button" data-q="What is my biggest risk?">What is my biggest risk?</button>
+        <button type="button" data-q="Explain my SWOT">Explain my SWOT</button>
+        <button type="button" data-q="Which scheme may be relevant?">Which scheme may be relevant?</button>
+        <button type="button" data-q="Mera monthly profit kitna hai?">Mera monthly profit kitna hai?</button>
+        <button type="button" data-q="Meri EMI kitni hai?">Meri EMI kitni hai?</button>
+        <button type="button" data-q="Mere business ka biggest risk kya hai?">Mere business ka biggest risk kya hai?</button>
+    </div>
+    <div class="chat-log" id="chat-log" aria-live="polite"></div>
+    <form class="chat-compose" id="chat-form">
+        <button type="button" class="chat-mic" id="chat-mic" title="Voice question">🎤</button>
+        <input type="text" id="chat-input" autocomplete="off" placeholder="Type your question...">
+        <button type="submit" class="btn primary small">➤</button>
+    </form>
+    <p class="chat-status" id="chat-status"></p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    window.GRAMINTEL_ASSESSMENT_ID = {{ data.id }};
+</script>
+<script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+{% endblock %}

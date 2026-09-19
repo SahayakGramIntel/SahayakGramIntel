@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Previous Reports · GramIntel{% endblock %}
+{% block content %}
+<section class="hero compact">
+    <h1>Previous Reports</h1>
+    <p class="subtitle">Assessments stored locally in SQLite.</p>
+</section>
+
+{% if reports %}
+    <div class="report-cards">
+        {% for r in reports %}
+            <article class="card report-card">
+                <h2>{{ r.business_idea }}</h2>
+                <p class="muted">{{ r.location }}</p>
+                <p><strong>Profit:</strong> ₹{{ "{:,.0f}".format(r.profit or 0) }}</p>
+                <p><strong>Feasibility:</strong> {{ r.feasibility_score }} / 100</p>
+                <p><strong>Date:</strong> {{ r.created_at }}</p>
+                <a class="btn small primary" href="{{ url_for('report', report_id=r.id) }}">View Report</a>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <section class="card">
+        <p>No assessments yet. <a href="{{ url_for('index') }}">Run the first analysis</a>.</p>
+    </section>
+{% endif %}
+{% endblock %}

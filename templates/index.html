@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}GramIntel · New Assessment{% endblock %}
+{% block content %}
+<section class="hero">
+    <p class="kicker">Smart India Hackathon Prototype</p>
+    <h1>GramIntel</h1>
+    <p class="subtitle">AI-Driven Hyper-Local Business Advisory and Financial Structuring Assistant</p>
+    <p class="lead">Helping rural micro-entrepreneurs understand business feasibility, finances, risks and opportunities.</p>
+</section>
+
+<div class="grid-2">
+    <section class="card">
+        <h2>Business Input</h2>
+        <p class="muted">Enter planned figures. All calculations run locally with transparent rules. This is not a trained LLM.</p>
+
+        <form method="post" action="{{ url_for('analyze') }}" id="biz-form">
+            <div class="field">
+                <label for="name">Entrepreneur Name</label>
+                <div class="input-row">
+                    <input id="name" name="name" type="text" autocomplete="name" placeholder="Entrepreneur name">
+                    <button type="button" class="mic-btn" data-voice-target="name" title="Voice input for name">🎤</button>
+                </div>
+            </div>
+            <div class="field">
+                <label for="location">Location</label>
+                <div class="input-row">
+                    <input id="location" name="location" type="text" placeholder="e.g. Mandsaur">
+                    <button type="button" class="mic-btn" data-voice-target="location" title="Voice input for location">🎤</button>
+                </div>
+            </div>
+            <div class="field">
+                <label for="business_idea">Business Idea</label>
+                <div class="input-row">
+                    <textarea id="business_idea" name="business_idea" rows="3" required placeholder="Describe the activity"></textarea>
+                    <button type="button" class="mic-btn" data-voice-target="business_idea" title="Voice input for business idea">🎤</button>
+                </div>
+            </div>
+            <p class="voice-status" id="voice-status"></p>
+            <label class="lang-toggle">
+                Voice language
+                <select id="voice-lang">
+                    <option value="en-IN">English</option>
+                    <option value="hi-IN">Hindi</option>
+                </select>
+            </label>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="investment">Initial Investment (₹)</label>
+                    <input id="investment" name="investment" type="number" min="0" step="any" value="0">
+                </div>
+                <div class="field">
+                    <label for="monthly_sales">Expected Monthly Sales (₹)</label>
+                    <input id="monthly_sales" name="monthly_sales" type="number" min="0" step="any" value="0">
+                </div>
+                <div class="field">
+                    <label for="monthly_expenses">Monthly Operating Expenses (₹)</label>
+                    <input id="monthly_expenses" name="monthly_expenses" type="number" min="0" step="any" value="0">
+                </div>
+                <div class="field">
+                    <label for="loan_amount">Loan Amount (₹)</label>
+                    <input id="loan_amount" name="loan_amount" type="number" min="0" step="any" value="0">
+                </div>
+                <div class="field">
+                    <label for="interest_rate">Annual Interest Rate (%)</label>
+                    <input id="interest_rate" name="interest_rate" type="number" min="0" step="any" value="0">
+                </div>
+                <div class="field">
+                    <label for="loan_tenure">Loan Tenure in Months</label>
+                    <input id="loan_tenure" name="loan_tenure" type="number" min="0" step="1" value="0">
+                </div>
+            </div>
+            <div class="actions">
+                <button type="submit" class="btn primary">Analyze Business</button>
+                <button type="button" class="btn ghost" id="demo-btn">Try Demo</button>
+            </div>
+        </form>
+    </section>
+
+    <aside class="stack">
+        <section class="card highlight">
+            <h2>What you get</h2>
+            <ul class="checklist">
+                <li>Financial structuring (profit, EMI, ROI, break-even)</li>
+                <li>Keyword-based business classification</li>
+                <li>Demo locality snapshot for MP towns</li>
+                <li>Explainable feasibility score (0–100)</li>
+                <li>SWOT, scheme pointers, recommendations</li>
+                <li>What-If simulation and local chatbot</li>
+            </ul>
+        </section>
+        <section class="card">
+            <h2>Demo localities</h2>
+            <p class="muted">Sample data is labelled as demo only: Mandsaur, Indore, Bhopal, Sagar, Neemuch, Ujjain. This is not live government data.</p>
+        </section>
+    </aside>
+</div>
+{% endblock %}
