@@ -72,6 +72,8 @@ Health check: http://127.0.0.1:5000/health
 
 Open the chatbox at http://127.0.0.1:5000/chat
 
+Chat: http://127.0.0.1:5000/chat
+
 ## Chatbot explanation
 
 The chatbot is a **local contextual assistant**. It detects intents (profit, EMI, feasibility, risk, SWOT, schemes, etc.) and answers using the saved assessment. Hindi/Hinglish phrases such as “Mera monthly profit kitna hai?” get simple Hinglish replies with the **actual** report numbers.
